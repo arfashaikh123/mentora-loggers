@@ -34,6 +34,53 @@ clusters, centroids = kmeans(data, k=2)
 print("Clusters:", clusters)
 print("Centroids:", centroids)
 
+''',"Binning":
+    '''# ----- Binning & Smoothing (from scratch) -----
+
+data = [4, 8, 15, 21, 21, 24, 25, 28, 34, 36, 40, 44, 50]
+data.sort()
+print("Original Data:", data)
+
+# ===== 1️⃣ Equal-Width Binning =====
+def equal_width_binning(data, bins):
+    width = (max(data) - min(data)) / bins
+    bin_ranges = [(min(data) + i*width, min(data) + (i+1)*width) for i in range(bins)]
+    bin_groups = [[] for _ in range(bins)]
+    for val in data:
+        index = min(int((val - min(data)) / width), bins-1)
+        bin_groups[index].append(val)
+    return bin_groups
+
+# ===== 2️⃣ Equal-Depth Binning =====
+def equal_depth_binning(data, bins):
+    n = len(data)
+    size = n // bins
+    return [data[i*size:(i+1)*size] for i in range(bins-1)] + [data[(bins-1)*size:]]
+
+# ===== 3️⃣ Smoothing Functions =====
+def smooth_by_mean(bins):
+    return [[round(sum(b)/len(b),2)]*len(b) for b in bins]
+
+def smooth_by_median(bins):
+    return [[sorted(b)[len(b)//2]]*len(b) for b in bins]
+
+def smooth_by_boundary(bins):
+    smoothed = []
+    for b in bins:
+        min_b, max_b = b[0], b[-1]
+        smoothed.append([min_b if abs(x-min_b)<abs(x-max_b) else max_b for x in b])
+    return smoothed
+
+# --- Example Execution ---
+width_bins = equal_width_binning(data, 3)
+depth_bins = equal_depth_binning(data, 3)
+
+print("\nEqual-Width Bins:", width_bins)
+print("Equal-Depth Bins:", depth_bins)
+
+print("\nSmoothing by Mean:", smooth_by_mean(depth_bins))
+print("Smoothing by Median:", smooth_by_median(depth_bins))
+print("Smoothing by Boundary:", smooth_by_boundary(depth_bins))
 ''',
     "NB": '''
 import math
